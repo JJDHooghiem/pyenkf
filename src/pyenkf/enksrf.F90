@@ -133,18 +133,18 @@ contains
         call daxpy(nparams,res,KG,1,x,1)
 
         ! update deviations HX = HX - HK HXp(i) using outer product
-        ! call DGER(nobs,nmembers,-1.0*alpha,fac,1,HXp_n,1,HXp,nobs)
+        call DGER(nobs,nmembers,-1.0*alpha,fac,1,HXp_n,1,HXp,nobs)
 
         ! update Xp 
-        ! call DGER(nparams,nmembers,-1.0*alpha,KG,1,HXp_n,1,Xp,nparams)
+        call DGER(nparams,nmembers,-1.0*alpha,KG,1,HXp_n,1,Xp,nparams)
 
         ! update deviations HX = HX - HK HXp(i) using outer product in loop
-        do j=1,nmembers
-                ! update Xp
-                call daxpy(nparams,-1.0*alpha*HXp_n(j),KG,1,Xp(:,j),1)
-                ! update HXp for column j
-                call daxpy(nobs,-1.0*alpha*HXp_n(j) ,fac,1,HXp(:,j),1)
-        enddo ! loop over nmembers 
+        ! do j=1,nmembers
+        !         ! update Xp
+        !         call daxpy(nparams,-1.0*alpha*HXp_n(j),KG,1,Xp(:,j),1)
+        !         ! update HXp for column j
+        !         call daxpy(nobs,-1.0*alpha*HXp_n(j) ,fac,1,HXp(:,j),1)
+        ! enddo ! loop over nmembers 
 
     ! end loop over observations
     enddo 
@@ -300,14 +300,15 @@ contains
       end do
 
       ! multiply 
-      C = alpha*C
-      ! copyout only those result required
+      ! C = alpha*C
+      ! copyout only those result required and multiply with constant (FMA)
       ! in the future consider smaller kernels to handle edge cases
       do jjr = 1, jnrmax
       do iir = 1, imrmax
-         Cout(iir, jjr) = Cout(iir, jjr) + C(iir, jjr)
+         Cout(iir, jjr) = Cout(iir, jjr) + alpha*C(iir, jjr)
       end do
       end do
 
    end subroutine mm_kernel_8x6
+
 end module enkf_core
