@@ -21,6 +21,14 @@ useful flags may be `--break-system-packages` and `--user`.
 Currently, no automatic installation of either a static library nor shared library exist. To include it in a project, copy the source. 
 
 ## Usage
+### Environmental variables
+
+The following environmental variables may need to be set before usage of the blocked ensemble kalman filter. 
+```sh
+export OMP_PLACES=cores
+export OMP_STACK_SIZE=12m
+```
+The `OMP_PLACES=cores` is needed so the underlying cache optimized blas routines run smoothly, i.e. L1 and L2 cache may be shared by several threads on a core (2 on AMD Ryzen 7). Since the paralell version requires a lot of private data, the stack size should be increased for larger problems to allow for sufficient stack memory. If the stacksize is too small, usually the application will seg-fault. 
 
 ### python
 A small python example is given in examples, which can also be used as a test.
